@@ -1,0 +1,20 @@
+{
+  "ext/fragment/DocAttachment.fragment.xml": 1724217263325,
+  "manifest.json": 1725213001251,
+  "ext/controller/DisableEdit.controller.js": 1724749490592,
+  "ext/controller/DisableCreate.controller.js": 1724737568696,
+  "ext/fragment/DocAttachment.js": 1724655396209,
+  "Component.js": 1721745370463,
+  "Component-dbg.js": 1721745370463,
+  "Component.js.map": 1725213001438,
+  "ext/controller/DisableCreate-dbg.controller.js": 1724737568696,
+  "ext/controller/DisableCreate.controller.js.map": 1725213001459,
+  "ext/fragment/DocAttachment-dbg.js": 1724655396209,
+  "ext/fragment/DocAttachment.js.map": 1725213001458,
+  "ext/controller/DisableEdit-dbg.controller.js": 1724749490592,
+  "ext/controller/DisableEdit.controller.js.map": 1725213001459,
+  "Component-preload.js": 1725213001667,
+  "Component-preload.js.map": 1725213001667,
+  "i18n/i18n.properties": 1721745382739,
+  "index.html": 1721745370463
+}

@@ -1,0 +1,10 @@
+{
+    "folders": [
+        {
+            "path": "collegeproject"
+        }
+    ],
+    "settings": {
+        "SAP HANA Database Explorer.ShowXsAdvancedConnections": true
+    }
+}

@@ -1,0 +1,2 @@
+sap.ui.define(["sap/m/MessageToast"],function(e){"use strict";return{create:function(s){e.show("Create method invoked.")},display:function(){e.show("Display method invoked.")}}});
+//# sourceMappingURL=File.js.map

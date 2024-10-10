@@ -1,0 +1,2 @@
+sap.ui.define(["sap/ui/core/mvc/ControllerExtension"],function(e){"use strict";return e.extend("college.ext.controller.Popup",{override:{onInit:function(){alert("Welcome to Your Application!")}}})});
+//# sourceMappingURL=Popup.controller.js.map

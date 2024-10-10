@@ -1,0 +1,182 @@
+_schema-version: "3.1"
+ID: collegeproject
+description: A simple CAP project.
+version: 1.0.0
+modules:
+- name: collegeproject-srv
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: collegeproject-db
+  - name: Destination_Connectivity
+  - name: uaa_collegeproject
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+    readiness-health-check-http-endpoint: /health
+    readiness-health-check-type: http
+  build-parameters:
+    builder: npm
+- name: collegeproject-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: collegeproject-repo-host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - appcollege.zip
+      name: appcollege
+      target-path: resources/
+    - artifacts:
+      - clglecturer.zip
+      name: clglecturer
+      target-path: resources/
+    - artifacts:
+      - lecturerApprovalUIworkflowuimodule.zip
+      name: lecturerApprovalUIworkflowuimodule
+      target-path: resources/
+- name: appcollege
+  type: html5
+  path: app/appcollege
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: collegeproject-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: collegeproject-db
+  parameters:
+    buildpack: nodejs_buildpack
+- name: clglecturer
+  type: html5
+  path: app/clglecturer
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: collegeproject-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: collegeproject-destination-service
+    parameters:
+      content-target: true
+  - name: collegeproject-repo-host
+    parameters:
+      service-key:
+        name: collegeproject-repo-host-key
+  - name: uaa_collegeproject
+    parameters:
+      service-key:
+        name: uaa_collegeproject-key
+  parameters:
+    content:
+      subaccount:
+        destinations:
+        - Name: collegetask_collegeproject_repo_host
+          ServiceInstanceName: collegeproject-html5-srv
+          ServiceKeyName: collegeproject-repo-host-key
+          sap.cloud.service: collegetask
+        - Authentication: OAuth2UserTokenExchange
+          Name: collegetask_uaa_collegeproject
+          ServiceInstanceName: collegeproject-xsuaa-service
+          ServiceKeyName: uaa_collegeproject-key
+          sap.cloud.service: collegetask
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+- name: lecturerApprovalUIworkflowuimodule
+  type: html5
+  path: workflow-ui-module
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: collegeproject-repo-host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: collegeproject-html5-srv
+    service-plan: app-host
+- name: collegeproject-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        subaccount:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          - Authentication: NoAuthentication
+            HTML5.DynamicDestination: true
+            HTML5.ForwardAuthToken: true
+            Name: collegeproject-srv-api
+            ProxyType: Internet
+            Type: HTTP
+            URL: ~{srv-api/srv-url}
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: collegeproject-destination-service
+    service-plan: lite
+  requires:
+  - name: srv-api
+- name: collegeproject-db
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+- name: Destination_Connectivity
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: false
+      init_data:
+        subaccount:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
+    service: destination
+    service-plan: lite
+- name: uaa_collegeproject
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: collegeproject-xsuaa-service
+    service-plan: application
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npm ci
+    - npx cds build --production

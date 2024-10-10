@@ -1,0 +1,65 @@
+{
+  "name": "DemoProject22",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "18": "^0.0.0",
+    "@sap/cds": "^7.9.4",
+    "@sap/cds-hana": "^2",
+    "@sap/hdi-deploy": "^4.9.5",
+    "@sap/xsenv": "^5.2.0",
+    "@sap/xssec": "^4.2.2",
+    "axios": "1.7.5",
+    "base64-url": "^2.3.3",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "micromatch": "^4.0.8",
+    "passport": "^0.7.0",
+    "uid-safe": "^2.1.5"
+  },
+  "devDependencies": {
+    "@cap-js/sqlite": "^1",
+    "@sap/cds-dk": "^7.9.7",
+    "@sap/eslint-plugin-cds": "^3",
+    "@sap/ux-specification": "^1.120.14",
+    "eslint": "^9",
+    "rimraf": "^5.0.5"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch-college": "cds watch --open college/webapp/index.html?sap-ui-xx-viewCache=false",
+    "undeploy": "cf undeploy DemoProject22 --delete-services --delete-service-keys --delete-service-brokers",
+    "build": "rimraf resources mta_archives && mbt build --mtar archive",
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
+    "watch-project2": "cds watch --open project2/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-collegeregapp": "cds watch --open collegeregapp/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-schoolapp": "cds watch --open schoolapp/webapp/index.html?sap-ui-xx-viewCache=false"
+  },
+  "sapux": [
+    "app/college",
+    "app/project2",
+    "app/collegeregapp",
+    "app/schoolapp"
+  ],
+  "cds": {
+    "requires": {
+      "db": "hana",
+      "auth": "dummy",
+      "destinations": "true",
+      "MM_DEV": {
+        "kind": "odata-v2",
+        "credentials": {
+          "destination": "ABAP"
+        },
+        "destinationOptions": {
+          "selectionStrategy": "alwaysProvider",
+          "jwt": null
+        }
+      }
+    }
+  }
+}

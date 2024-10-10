@@ -1,0 +1,218 @@
+{
+    "_version": "1.59.0",
+    "sap.app": {
+        "id": "appcollege",
+        "type": "application",
+        "i18n": "i18n/i18n.properties",
+        "applicationVersion": {
+            "version": "0.0.1"
+        },
+        "title": "{{Department App}}",
+        "description": "{{Department details}}",
+        "resources": "resources.json",
+        "sourceTemplate": {
+            "id": "@sap/generator-fiori:lrop",
+            "version": "1.14.1",
+            "toolsId": "630261d7-b5b3-45f5-b8f1-cae2082df3c6"
+        },
+        "dataSources": {
+            "mainService": {
+                "uri": "odata/v4/my/",
+                "type": "OData",
+                "settings": {
+                    "annotations": [],
+                    "odataVersion": "4.0"
+                }
+            }
+        },
+        "crossNavigation": {
+            "inbounds": {
+                "objcollege1-display": {
+                    "semanticObject": "objcollege1",
+                    "action": "display",
+                    "title": "{{flpTitle}}",
+                    "signature": {
+                        "parameters": {},
+                        "additionalParameters": "allowed"
+                    }
+                }
+            }
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "icons": {
+            "icon": "",
+            "favIcon": "",
+            "phone": "",
+            "phone@2": "",
+            "tablet": "",
+            "tablet@2": ""
+        },
+        "deviceTypes": {
+            "desktop": true,
+            "tablet": true,
+            "phone": true
+        }
+    },
+    "sap.ui5": {
+        "flexEnabled": true,
+        "dependencies": {
+            "minUI5Version": "1.126.1",
+            "libs": {
+                "sap.m": {},
+                "sap.ui.core": {},
+                "sap.ushell": {},
+                "sap.fe.templates": {}
+            }
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "appcollege.i18n.i18n"
+                }
+            },
+            "": {
+                "dataSource": "mainService",
+                "preload": true,
+                "settings": {
+                    "operationMode": "Server",
+                    "autoExpandSelect": true,
+                    "earlyRequests": true
+                }
+            },
+            "@i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "uri": "i18n/i18n.properties"
+            }
+        },
+        "resources": {
+            "css": []
+        },
+        "routing": {
+            "config": {},
+            "routes": [
+                {
+                    "pattern": ":?query:",
+                    "name": "DepartmentList",
+                    "target": "DepartmentList"
+                },
+                {
+                    "pattern": "Department({key}):?query:",
+                    "name": "DepartmentObjectPage",
+                    "target": "DepartmentObjectPage"
+                },
+                {
+                    "pattern": "Department({key})/deptToStud({key2}):?query:",
+                    "name": "Department_deptToStudObjectPage",
+                    "target": "Department_deptToStudObjectPage"
+                },
+                {
+                    "pattern": "Department({key})/deptToLec({key2}):?query:",
+                    "name": "Department_deptToLecObjectPage",
+                    "target": "Department_deptToLecObjectPage"
+                }
+            ],
+            "targets": {
+                "DepartmentList": {
+                    "type": "Component",
+                    "id": "DepartmentList",
+                    "name": "sap.fe.templates.ListReport",
+                    "options": {
+                        "settings": {
+                            "contextPath": "/Department",
+                            "variantManagement": "None",
+                            "navigation": {
+                                "Department": {
+                                    "detail": {
+                                        "route": "DepartmentObjectPage"
+                                    }
+                                }
+                            },
+                            "controlConfiguration": {
+                                "@com.sap.vocabularies.UI.v1.LineItem": {
+                                    "tableSettings": {
+                                        "type": "ResponsiveTable",
+                                        "condensedTableLayout": true
+                                    }
+                                }
+                            },
+                            "initialLoad": "Enabled"
+                        }
+                    }
+                },
+                "DepartmentObjectPage": {
+                    "type": "Component",
+                    "id": "DepartmentObjectPage",
+                    "name": "sap.fe.templates.ObjectPage",
+                    "options": {
+                        "settings": {
+                            "editableHeaderContent": false,
+                            "contextPath": "/Department",
+                            "navigation": {
+                                "deptToStud": {
+                                    "detail": {
+                                        "route": "Department_deptToStudObjectPage"
+                                    }
+                                },
+                                "deptToLec": {
+                                    "detail": {
+                                        "route": "Department_deptToLecObjectPage"
+                                    }
+                                }
+                            },
+                            "sectionLayout": "Tabs"
+                        }
+                    }
+                },
+                "Department_deptToStudObjectPage": {
+                    "type": "Component",
+                    "id": "Department_deptToStudObjectPage",
+                    "name": "sap.fe.templates.ObjectPage",
+                    "options": {
+                        "settings": {
+                            "contextPath": "/Department/deptToStud",
+                            "navigation": {}
+                        }
+                    }
+                },
+                "Department_deptToLecObjectPage": {
+                    "type": "Component",
+                    "id": "Department_deptToLecObjectPage",
+                    "name": "sap.fe.templates.ObjectPage",
+                    "options": {
+                        "settings": {
+                            "contextPath": "/Department/deptToLec",
+                            "navigation": {}
+                        }
+                    }
+                }
+            }
+        },
+        "extends": {
+            "extensions": {
+                "sap.ui.controllerExtensions": {
+                    "sap.fe.templates.ListReport.ListReportController": {
+                        "controllerName": "appcollege.ext.controller.DisableCreateList"
+                    },
+                    "sap.fe.templates.ObjectPage.ObjectPageController": {
+                        "controllerName": "appcollege.ext.controller.DisableDelete"
+                    }
+                }
+            }
+        }
+    },
+    "sap.fiori": {
+        "registrationIds": [],
+        "archeType": "transactional"
+    },
+    "sap.cloud": {
+        "public": true,
+        "service": "collegetask"
+    }
+}

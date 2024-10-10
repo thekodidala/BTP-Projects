@@ -1,0 +1,200 @@
+_schema-version: "3.1"
+ID: DemoProject22
+description: A simple CAP project.
+version: 1.0.0
+modules:
+- name: DemoProject22-srv
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: DemoProject22-db
+  - name: uaa_DemoProject22
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+    readiness-health-check-http-endpoint: /health
+    readiness-health-check-type: http
+  build-parameters:
+    builder: npm
+- name: DemoProject22-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: DemoProject22-repo-host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - college.zip
+      name: college
+      target-path: resources/
+    - artifacts:
+      - project2.zip
+      name: project2
+      target-path: resources/
+    - artifacts:
+      - collegeregapp.zip
+      name: collegeregapp
+      target-path: resources/
+    - artifacts:
+      - schoolapp.zip
+      name: schoolapp
+      target-path: resources/
+    - artifacts:
+      - lecturerApprovalworkflowuimodule.zip
+      name: lecturerApprovalworkflowuimodule
+      target-path: resources/
+    - artifacts:
+      - salesgenerateso.zip
+      name: salesgenerateso
+      target-path: resources/
+- name: college
+  type: html5
+  path: app/college
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: DemoProject22-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: DemoProject22-db
+  parameters:
+    buildpack: nodejs_buildpack
+- name: project2
+  type: html5
+  path: app/project2
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: DemoProject22-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: DemoProject22-destination-service
+    parameters:
+      content-target: true
+  - name: DemoProject22-repo-host
+    parameters:
+      service-key:
+        name: DemoProject22-repo-host-key
+  - name: uaa_DemoProject22
+    parameters:
+      service-key:
+        name: uaa_DemoProject22-key
+  parameters:
+    content:
+      subaccount:
+        destinations:
+        - Name: demoprojectapprouter22_DemoProject22_repo_host
+          ServiceInstanceName: DemoProject22-html5-srv
+          ServiceKeyName: DemoProject22-repo-host-key
+          sap.cloud.service: demoprojectapprouter22
+        - Authentication: OAuth2UserTokenExchange
+          Name: demoprojectapprouter22_uaa_DemoProject22
+          ServiceInstanceName: DemoProject22-xsuaa-service
+          ServiceKeyName: uaa_DemoProject22-key
+          sap.cloud.service: demoprojectapprouter22
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+- name: collegeregapp
+  type: html5
+  path: app/collegeregapp
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: schoolapp
+  type: html5
+  path: app/schoolapp
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: lecturerApprovalworkflowuimodule
+  type: html5
+  path: workflow-ui-module
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: salesgenerateso
+  type: html5
+  path: generateso
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: DemoProject22-repo-host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: DemoProject22-html5-srv
+    service-plan: app-host
+- name: DemoProject22-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: DemoProject22-destination-service
+    service-plan: lite
+  requires:
+  - name: srv-api
+- name: DemoProject22-db
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+- name: uaa_DemoProject22
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: DemoProject22-xsuaa-service
+    service-plan: application
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npm ci
+    - npx cds build --production
